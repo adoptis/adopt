@@ -21,7 +21,7 @@ const BRANCHES = [
   { id:"wonju",      name:"원주",   full:"원주 관리센터",   color:"#B07A30", bg:"#FBF5E8", dot:"🍊" },
 ];
 const SPECIES_OPTS = ["강아지","고양이","토끼","거북이","앵무새","기타"];
-const ADMIN_PW = "1025";
+const ADMIN_PW = "1020";
 
 const makeDogSvg = (bg, fur, ear) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/><ellipse cx="78" cy="78" rx="19" ry="28" fill="${ear}" transform="rotate(-20 78 78)"/><ellipse cx="122" cy="78" rx="19" ry="28" fill="${ear}" transform="rotate(20 122 78)"/><ellipse cx="78" cy="78" rx="12" ry="20" fill="#C07850" transform="rotate(-20 78 78)"/><ellipse cx="122" cy="78" rx="12" ry="20" fill="#C07850" transform="rotate(20 122 78)"/><ellipse cx="100" cy="118" rx="54" ry="52" fill="${fur}"/><ellipse cx="100" cy="112" rx="44" ry="42" fill="#EDD8B8"/><circle cx="84" cy="103" r="10" fill="#1C100A"/><circle cx="116" cy="103" r="10" fill="#1C100A"/><circle cx="87" cy="100" r="3.5" fill="white"/><circle cx="119" cy="100" r="3.5" fill="white"/><ellipse cx="100" cy="121" rx="13" ry="9" fill="#C07878"/><path d="M87 121 Q100 133 113 121" stroke="#A05050" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="116" rx="8" ry="5" fill="#EDD8B8" opacity="0.5"/><ellipse cx="116" cy="116" rx="8" ry="5" fill="#EDD8B8" opacity="0.5"/></svg>`;
 const makeCatSvg = (bg, fur, inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/><polygon points="68,82 54,44 90,70" fill="${fur}"/><polygon points="132,82 146,44 110,70" fill="${fur}"/><polygon points="70,80 60,52 88,70" fill="${inner}"/><polygon points="130,80 140,52 112,70" fill="${inner}"/><ellipse cx="100" cy="116" rx="52" ry="50" fill="${fur}"/><ellipse cx="100" cy="110" rx="42" ry="40" fill="#F0DCC8"/><ellipse cx="84" cy="102" rx="12" ry="14" fill="#1A2240"/><ellipse cx="116" cy="102" rx="12" ry="14" fill="#1A2240"/><ellipse cx="84" cy="102" rx="5" ry="13" fill="#080810"/><ellipse cx="116" cy="102" rx="5" ry="13" fill="#080810"/><circle cx="87" cy="98" r="3.5" fill="white"/><circle cx="119" cy="98" r="3.5" fill="white"/><ellipse cx="100" cy="121" rx="8" ry="5.5" fill="#D07888"/><path d="M92 121 Q100 130 108 121" stroke="#B05868" stroke-width="1.5" fill="none" stroke-linecap="round"/><line x1="68" y1="113" x2="50" y2="108" stroke="#C0A898" stroke-width="1.3"/><line x1="68" y1="118" x2="49" y2="118" stroke="#C0A898" stroke-width="1.3"/><line x1="132" y1="113" x2="150" y2="108" stroke="#C0A898" stroke-width="1.3"/><line x1="132" y1="118" x2="151" y2="118" stroke="#C0A898" stroke-width="1.3"/></svg>`;
@@ -42,17 +42,17 @@ const getPetSvg = (species, idx, brBg) => {
 };
 
 const SAMPLES = [
-  { name:"코코",  breed:"말티즈",        species:"강아지", age:"2살",   gender:"암컷", branch:"ansan",      notes:"사람을 무척 좋아하는 순한 아이예요 🥰",    neutered:true,  vaccinated:true,  photo:null, svgIdx:0, status:"입양대기" },
-  { name:"나비",  breed:"코리안숏헤어",   species:"고양이", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"조용하고 독립적인 성격이에요",               neutered:true,  vaccinated:true,  photo:null, svgIdx:0, status:"입양대기" },
-  { name:"복실이",breed:"포메라니안",      species:"강아지", age:"1살",   gender:"암컷", branch:"pyeongtaek", notes:"에너지 넘치는 개구쟁이예요 ⚡",             neutered:false, vaccinated:true,  photo:null, svgIdx:1, status:"입양대기" },
-  { name:"솜이",  breed:"네덜란드드워프", species:"토끼",   age:"6개월", gender:"암컷", branch:"wonju",      notes:"조용하고 얌전한 아이예요",                  neutered:false, vaccinated:false, photo:null, svgIdx:0, status:"입양완료" },
-  { name:"두부",  breed:"비글",           species:"강아지", age:"4살",   gender:"수컷", branch:"ansan",      notes:"산책을 엄청 좋아해요! 활발한 아이예요",    neutered:true,  vaccinated:true,  photo:null, svgIdx:2, status:"입양대기" },
-  { name:"하늘이",breed:"페르시안",        species:"고양이", age:"5살",   gender:"암컷", branch:"wonju",      notes:"조용한 환경을 좋아하는 우아한 고양이예요", neutered:true,  vaccinated:true,  photo:null, svgIdx:1, status:"입양대기" },
-  { name:"몽이",  breed:"골든리트리버",   species:"강아지", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"온순하고 애교가 넘쳐요 🐾",                neutered:true,  vaccinated:true,  photo:null, svgIdx:1, status:"입양대기" },
-  { name:"치즈",  breed:"먼치킨",         species:"고양이", age:"2살",   gender:"수컷", branch:"pyeongtaek", notes:"동글동글 귀여운 눈망울이 매력이에요 😻",  neutered:true,  vaccinated:true,  photo:null, svgIdx:2, status:"입양완료" },
+  { name:"코코",  breed:"말티즈",        species:"강아지", age:"2살",   gender:"암컷", branch:"ansan",      notes:"사람을 무척 좋아하는 순한 아이예요 🥰",    neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
+  { name:"나비",  breed:"코리안숏헤어",   species:"고양이", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"조용하고 독립적인 성격이에요",               neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
+  { name:"복실이",breed:"포메라니안",      species:"강아지", age:"1살",   gender:"암컷", branch:"pyeongtaek", notes:"에너지 넘치는 개구쟁이예요 ⚡",             neutered:false, vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+  { name:"솜이",  breed:"네덜란드드워프", species:"토끼",   age:"6개월", gender:"암컷", branch:"wonju",      notes:"조용하고 얌전한 아이예요",                  neutered:false, vaccinated:false, photos:[], svgIdx:0, status:"입양완료" },
+  { name:"두부",  breed:"비글",           species:"강아지", age:"4살",   gender:"수컷", branch:"ansan",      notes:"산책을 엄청 좋아해요! 활발한 아이예요",    neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양대기" },
+  { name:"하늘이",breed:"페르시안",        species:"고양이", age:"5살",   gender:"암컷", branch:"wonju",      notes:"조용한 환경을 좋아하는 우아한 고양이예요", neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+  { name:"몽이",  breed:"골든리트리버",   species:"강아지", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"온순하고 애교가 넘쳐요 🐾",                neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+  { name:"치즈",  breed:"먼치킨",         species:"고양이", age:"2살",   gender:"수컷", branch:"pyeongtaek", notes:"동글동글 귀여운 눈망울이 매력이에요 😻",  neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양완료" },
 ];
 
-const emptyForm = () => ({ name:"", breed:"", species:"강아지", age:"", gender:"암컷", branch:"ansan", notes:"", neutered:false, vaccinated:false, photo:null, svgIdx:0, status:"입양대기" });
+const emptyForm = () => ({ name:"", breed:"", species:"강아지", age:"", gender:"암컷", branch:"ansan", notes:"", neutered:false, vaccinated:false, photos:[], svgIdx:0, status:"입양대기" });
 const spEmoji = s => ({강아지:"🐶",고양이:"🐱",토끼:"🐰",거북이:"🐢",앵무새:"🦜",기타:"🐾"}[s]||"🐾");
 const getBranch = id => BRANCHES.find(b=>b.id===id)||BRANCHES[0];
 const shuffle = arr => [...arr].sort(()=>Math.random()-0.5);
@@ -62,10 +62,12 @@ async function compressImg(dataUrl) {
     const img = new Image();
     img.onload = () => {
       const c = document.createElement("canvas");
-      const r = Math.min(500/img.width, 500/img.height, 1);
+      const r = Math.min(400/img.width, 400/img.height, 1);
       c.width = Math.round(img.width*r); c.height = Math.round(img.height*r);
       c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-      resolve(c.toDataURL("image/jpeg",0.6));
+      // WebP 지원 여부 확인 후 적용
+      const webp = c.toDataURL("image/webp", 0.5);
+      resolve(webp.startsWith("data:image/webp") ? webp : c.toDataURL("image/jpeg", 0.5));
     };
     img.src = dataUrl;
   });
@@ -85,6 +87,7 @@ export default function App() {
   const [saving, setSaving]     = useState(false);
   const [branchOpen, setBranchOpen]   = useState(false);
   const [speciesOpen, setSpeciesOpen] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
   const tapRef   = useRef(0);
   const tapTimer = useRef(null);
 
@@ -94,7 +97,6 @@ export default function App() {
     try {
       const snap = await getDocs(collection(db, "animals"));
       if (snap.empty) {
-        // 샘플 데이터 초기 업로드
         for (const a of SAMPLES) await addDoc(collection(db, "animals"), a);
         const snap2 = await getDocs(collection(db, "animals"));
         setAnimals(snap2.docs.map(d=>({...d.data(), id:d.id})));
@@ -105,14 +107,22 @@ export default function App() {
     setLoading(false);
   }
 
-  async function addAnimal() {
+  async function saveAnimal(isEdit=false) {
     if (!form.name.trim() || saving) return;
     setSaving(true);
     try {
-      const a = { ...form, svgIdx:Math.floor(Math.random()*3), createdAt:Date.now() };
-      const ref = await addDoc(collection(db, "animals"), a);
-      setAnimals(prev=>[{...a, id:ref.id}, ...prev]);
-      setForm(emptyForm()); setScreen("list");
+      if (isEdit && form.id) {
+        const { id, ...data } = form;
+        await updateDoc(doc(db,"animals",id), data);
+        setAnimals(prev=>prev.map(a=>a.id===id ? {...data,id} : a));
+        setSelected({...data,id});
+        setScreen("detail");
+      } else {
+        const a = { ...form, svgIdx:Math.floor(Math.random()*3), createdAt:Date.now() };
+        const ref = await addDoc(collection(db, "animals"), a);
+        setAnimals(prev=>[{...a, id:ref.id}, ...prev]);
+        setForm(emptyForm()); setScreen("list");
+      }
     } catch(e){ console.error(e); }
     setSaving(false);
   }
@@ -145,12 +155,20 @@ export default function App() {
     else setPwErr(true);
   };
 
-  const handlePhoto = async e => {
-    const f=e.target.files[0]; if(!f) return;
-    const reader=new FileReader();
-    reader.onload=async ev=>{ const c=await compressImg(ev.target.result); setForm(prev=>({...prev,photo:c})); };
-    reader.readAsDataURL(f);
+  const handlePhotos = async e => {
+    const files = Array.from(e.target.files);
+    const current = form.photos || [];
+    const remaining = 3 - current.length;
+    const toProcess = files.slice(0, remaining);
+    const compressed = await Promise.all(toProcess.map(f => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = async ev => resolve(await compressImg(ev.target.result));
+      reader.readAsDataURL(f);
+    })));
+    setForm(prev=>({...prev, photos:[...current, ...compressed]}));
   };
+
+  const removePhoto = (idx) => setForm(prev=>({...prev, photos:prev.photos.filter((_,i)=>i!==idx)}));
 
   const sortAnimals = list => [...shuffle(list.filter(a=>a.status!=="입양완료")), ...shuffle(list.filter(a=>a.status==="입양완료"))];
   const filtered = sortAnimals(animals.filter(a=>{
@@ -163,15 +181,88 @@ export default function App() {
   const P = { fontFamily:"'Sunflower',sans-serif" };
   const page = { ...F, background:"#FAF7F4", minHeight:"100vh" };
 
-  const PetPhoto = ({ animal }) => {
-    const br = getBranch(animal.branch);
-    const src = animal.photo || getPetSvg(animal.species, animal.svgIdx||0, br.bg);
-    return (
-      <div style={{width:"100%",height:"100%",background:br.bg,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        {src ? <img src={src} alt={animal.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <span style={{fontSize:40}}>{spEmoji(animal.species)}</span>}
-      </div>
-    );
+  const getMainPhoto = (animal) => {
+    const photos = animal.photos || [];
+    if (photos.length > 0) return photos[0];
+    if (animal.photo) return animal.photo; // 구버전 호환
+    return getPetSvg(animal.species, animal.svgIdx||0, getBranch(animal.branch).bg);
   };
+
+  const FormScreen = ({ isEdit=false }) => (
+    <div style={{...page,paddingBottom:60}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
+      <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
+        <button onClick={()=>{ setScreen(isEdit?"detail":"list"); if(!isEdit) setForm(emptyForm()); }} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
+        <span style={{...P,fontWeight:700,fontSize:18,color:"#2A2420"}}>{isEdit?"정보 수정":"새 아이 등록"}</span>
+      </div>
+      <div style={{padding:"20px 22px"}}>
+
+        {/* 사진 3장 */}
+        <div style={{marginBottom:20}}>
+          <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:8,letterSpacing:"0.1em",textTransform:"uppercase"}}>사진 (최대 3장)</label>
+          <div style={{display:"flex",gap:10}}>
+            {[0,1,2].map(i => {
+              const photos = form.photos || [];
+              const hasPhoto = photos[i];
+              return (
+                <div key={i} style={{position:"relative",width:100,height:100,borderRadius:14,overflow:"hidden",flexShrink:0,border:hasPhoto?"none":"1.5px dashed #D8CECE",background:hasPhoto?"none":"#F5F0EB",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}
+                  onClick={()=>{ if(!hasPhoto) document.getElementById(`ph-inp-${i}`).click(); }}>
+                  {hasPhoto
+                    ? <>
+                        <img src={photos[i]} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                        <button onClick={e=>{e.stopPropagation();removePhoto(i);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.5)",border:"none",color:"white",borderRadius:"50%",width:20,height:20,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>×</button>
+                      </>
+                    : <div style={{textAlign:"center",color:"#C4B4A8"}}><div style={{fontSize:22}}>📷</div><div style={{fontSize:10,marginTop:4}}>추가</div></div>
+                  }
+                  <input id={`ph-inp-${i}`} type="file" accept="image/*" onChange={handlePhotos} style={{display:"none"}} multiple/>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {[{label:"이름 *",key:"name",placeholder:"예: 코코"},{label:"품종",key:"breed",placeholder:"예: 말티즈"},{label:"나이",key:"age",placeholder:"예: 2살"}].map(({label,key,placeholder})=>(
+          <div key={key} style={{marginBottom:12}}>
+            <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{label}</label>
+            <input value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={placeholder}
+              style={{width:"100%",padding:"11px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420"}}/>
+          </div>
+        ))}
+
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>특이사항</label>
+          <textarea value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="예: 사람을 좋아하는 순한 아이예요 🥰"
+            style={{width:"100%",padding:"12px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420",minHeight:70,resize:"vertical"}}/>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+          {[{label:"종류",key:"species",opts:SPECIES_OPTS.map(s=>({v:s,l:s}))},{label:"성별",key:"gender",opts:[{v:"암컷",l:"암컷"},{v:"수컷",l:"수컷"}]},{label:"관리센터",key:"branch",opts:BRANCHES.map(b=>({v:b.id,l:b.name}))}].map(({label,key,opts})=>(
+            <div key={key}>
+              <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{label}</label>
+              <select value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))}
+                style={{width:"100%",padding:"10px 6px",borderRadius:11,border:"1.5px solid #EDE5DE",...F,fontSize:12,background:"white",outline:"none",color:"#2A2420"}}>
+                {opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </div>
+          ))}
+        </div>
+
+        <div style={{display:"flex",gap:24,marginBottom:24}}>
+          {[{key:"neutered",label:"중성화 완료"},{key:"vaccinated",label:"접종 완료"}].map(({key,label})=>(
+            <label key={key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:14,fontWeight:500,color:"#5A4A40"}}>
+              <input type="checkbox" checked={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.checked}))} style={{width:16,height:16,accentColor:"#C0785A",cursor:"pointer"}}/>
+              {label}
+            </label>
+          ))}
+        </div>
+
+        <button onClick={()=>saveAnimal(isEdit)} disabled={!form.name.trim()||saving}
+          style={{width:"100%",padding:16,borderRadius:16,border:"none",background:form.name.trim()&&!saving?"#2A2420":"#E8DDD5",color:form.name.trim()&&!saving?"white":"#C4B4A8",fontSize:15,fontWeight:600,cursor:form.name.trim()&&!saving?"pointer":"default",...F}}>
+          {saving ? "저장 중..." : isEdit ? "✓  수정 완료" : "🐾  등록하기"}
+        </button>
+      </div>
+    </div>
+  );
 
   if (loading) return (
     <div style={{...page,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:14,minHeight:"100vh"}}>
@@ -199,24 +290,42 @@ export default function App() {
     </div>
   );
 
+  if (screen==="addForm") return <FormScreen isEdit={false}/>;
+  if (screen==="editForm") return <FormScreen isEdit={true}/>;
+
   if (screen==="detail" && selected) {
     const br = getBranch(selected.branch);
     const adopted = selected.status==="입양완료";
+    const photos = selected.photos?.length > 0 ? selected.photos : (selected.photo ? [selected.photo] : []);
+    const mainSvg = getPetSvg(selected.species, selected.svgIdx||0, br.bg);
+    const displayPhotos = photos.length > 0 ? photos : [mainSvg].filter(Boolean);
+    const curIdx = Math.min(photoIdx, displayPhotos.length-1);
+
     return (
       <div style={{...page,paddingBottom:48}}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
         <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
-          <button onClick={()=>setScreen("list")} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
+          <button onClick={()=>{setScreen("list");setPhotoIdx(0);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
           <span style={{fontWeight:600,fontSize:16,color:"#2A2420",flex:1,...F}}>{selected.name}</span>
           {adopted && <span style={{background:"#EDE5DE",color:"#9A8A80",padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:600}}>입양완료</span>}
         </div>
 
         <div style={{padding:"20px 22px 0",display:"flex",gap:16,alignItems:"flex-start"}}>
-          <div style={{position:"relative",width:140,height:140,flexShrink:0,borderRadius:20,overflow:"hidden"}}>
-            <PetPhoto animal={selected}/>
-            {adopted && <div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.75)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <span style={{background:"#6A5A50",color:"white",padding:"4px 10px",borderRadius:12,fontSize:10,fontWeight:600}}>입양완료</span>
-            </div>}
+          <div style={{flexShrink:0}}>
+            <div style={{position:"relative",width:140,height:140,borderRadius:20,overflow:"hidden"}}>
+              <img src={displayPhotos[curIdx]} alt={selected.name} style={{width:"100%",height:"100%",objectFit:"cover",background:br.bg}}/>
+              {adopted && <div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.75)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{background:"#6A5A50",color:"white",padding:"4px 10px",borderRadius:12,fontSize:10,fontWeight:600}}>입양완료</span>
+              </div>}
+            </div>
+            {displayPhotos.length > 1 && (
+              <div style={{display:"flex",gap:6,marginTop:8,justifyContent:"center"}}>
+                {displayPhotos.map((_,i)=>(
+                  <div key={i} onClick={()=>setPhotoIdx(i)}
+                    style={{width:i===curIdx?28:8,height:8,borderRadius:4,background:i===curIdx?br.color:"#EDE5DE",cursor:"pointer",transition:"all 0.2s"}}/>
+                ))}
+              </div>
+            )}
           </div>
           <div style={{flex:1,paddingTop:4}}>
             <h1 style={{margin:"0 0 5px",...P,fontSize:26,fontWeight:700,color:"#2A2420"}}>{selected.name}</h1>
@@ -246,72 +355,16 @@ export default function App() {
               <button onClick={()=>toggleStatus(selected.id)} style={{flex:1,padding:14,borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:adopted?"#B07A30":"#4A8C7A",color:"white"}}>
                 {adopted?"입양대기로 변경":"입양완료로 변경"}
               </button>
-              <button onClick={()=>{ if(window.confirm(`${selected.name}를 삭제할까요?`)) deleteAnimal(selected.id); }} style={{padding:"14px 16px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#FAECEC",color:"#B05050"}}>삭제</button>
+              <button onClick={()=>{setForm({...selected, photos:selected.photos||[]});setScreen("editForm");}}
+                style={{padding:"14px 16px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#F2F0EB",color:"#5A4A40"}}>수정</button>
+              <button onClick={()=>{ if(window.confirm(`${selected.name}를 삭제할까요?`)) deleteAnimal(selected.id); }}
+                style={{padding:"14px 16px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#FAECEC",color:"#B05050"}}>삭제</button>
             </div>
           )}
         </div>
       </div>
     );
   }
-
-  if (screen==="addForm") return (
-    <div style={{...page,paddingBottom:60}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
-      <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
-        <button onClick={()=>{ setScreen("list"); setForm(emptyForm()); }} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
-        <span style={{...P,fontWeight:700,fontSize:18,color:"#2A2420"}}>새 아이 등록</span>
-      </div>
-      <div style={{padding:"20px 22px"}}>
-        <div style={{display:"flex",gap:16,alignItems:"center",marginBottom:20}}>
-          <div onClick={()=>document.getElementById("ph-inp").click()}
-            style={{width:120,height:120,borderRadius:16,background:form.photo?"none":"#F5F0EB",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",overflow:"hidden",border:form.photo?"none":"1.5px dashed #D8CECE",flexShrink:0}}>
-            {form.photo ? <img src={form.photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              : <div style={{textAlign:"center",color:"#C4B4A8"}}><div style={{fontSize:24}}>📷</div><div style={{fontSize:11,marginTop:6,fontWeight:500}}>사진 추가</div></div>}
-            <input id="ph-inp" type="file" accept="image/*" onChange={handlePhoto} style={{display:"none"}}/>
-          </div>
-          <div style={{flex:1}}>
-            {[{label:"이름 *",key:"name",placeholder:"예: 코코"},{label:"품종",key:"breed",placeholder:"예: 말티즈"},{label:"나이",key:"age",placeholder:"예: 2살"}].map(({label,key,placeholder})=>(
-              <div key={key} style={{marginBottom:10}}>
-                <input value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={placeholder}
-                  style={{width:"100%",padding:"11px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420"}}/>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{marginBottom:14}}>
-          <textarea value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="특이사항 (예: 사람을 좋아하는 순한 아이예요 🥰)"
-            style={{width:"100%",padding:"12px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420",minHeight:70,resize:"vertical"}}/>
-        </div>
-
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
-          {[{label:"종류",key:"species",opts:SPECIES_OPTS.map(s=>({v:s,l:s}))},{label:"성별",key:"gender",opts:[{v:"암컷",l:"암컷"},{v:"수컷",l:"수컷"}]},{label:"관리센터",key:"branch",opts:BRANCHES.map(b=>({v:b.id,l:b.name}))}].map(({label,key,opts})=>(
-            <div key={key}>
-              <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{label}</label>
-              <select value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))}
-                style={{width:"100%",padding:"10px 6px",borderRadius:11,border:"1.5px solid #EDE5DE",...F,fontSize:12,background:"white",outline:"none",color:"#2A2420"}}>
-                {opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
-              </select>
-            </div>
-          ))}
-        </div>
-
-        <div style={{display:"flex",gap:24,marginBottom:24}}>
-          {[{key:"neutered",label:"중성화 완료"},{key:"vaccinated",label:"접종 완료"}].map(({key,label})=>(
-            <label key={key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:14,fontWeight:500,color:"#5A4A40"}}>
-              <input type="checkbox" checked={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.checked}))} style={{width:16,height:16,accentColor:"#C0785A",cursor:"pointer"}}/>
-              {label}
-            </label>
-          ))}
-        </div>
-
-        <button onClick={addAnimal} disabled={!form.name.trim()||saving}
-          style={{width:"100%",padding:16,borderRadius:16,border:"none",background:form.name.trim()&&!saving?"#2A2420":"#E8DDD5",color:form.name.trim()&&!saving?"white":"#C4B4A8",fontSize:15,fontWeight:600,cursor:form.name.trim()&&!saving?"pointer":"default",...F}}>
-          {saving ? "저장 중..." : "🐾  등록하기"}
-        </button>
-      </div>
-    </div>
-  );
 
   const waitingCount = animals.filter(a=>a.status==="입양대기").length;
   return (
@@ -397,13 +450,17 @@ export default function App() {
           {filtered.map(animal=>{
             const br = getBranch(animal.branch);
             const adopted = animal.status==="입양완료";
+            const mainPhoto = getMainPhoto(animal);
             return (
-              <div key={animal.id} onClick={()=>{ setSelected(animal); setScreen("detail"); }}
+              <div key={animal.id} onClick={()=>{ setSelected(animal); setPhotoIdx(0); setScreen("detail"); }}
                 style={{background:"white",borderRadius:22,overflow:"hidden",cursor:"pointer",border:"1px solid #EDE5DE",opacity:adopted?0.58:1,transition:"transform 0.18s,box-shadow 0.18s"}}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow="0 14px 36px rgba(0,0,0,0.10)";}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
-                <div style={{position:"relative",width:"100%",aspectRatio:"1"}}>
-                  <PetPhoto animal={animal}/>
+                <div style={{position:"relative",width:"100%",aspectRatio:"1",background:br.bg,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {mainPhoto
+                    ? <img src={mainPhoto} alt={animal.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                    : <span style={{fontSize:40}}>{spEmoji(animal.species)}</span>
+                  }
                   {adopted && (
                     <div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.65)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                       <span style={{background:"#6A5A50",color:"white",padding:"5px 12px",borderRadius:12,fontSize:10,fontWeight:600}}>입양완료</span>
@@ -412,6 +469,11 @@ export default function App() {
                   <div style={{position:"absolute",top:10,left:10,background:"rgba(255,255,255,0.88)",borderRadius:10,padding:"3px 9px",fontSize:11,fontWeight:700,color:br.color}}>
                     {br.dot} {br.name}
                   </div>
+                  {(animal.photos?.length||0) > 1 && (
+                    <div style={{position:"absolute",bottom:8,right:8,background:"rgba(0,0,0,0.45)",borderRadius:8,padding:"2px 7px",fontSize:10,color:"white",fontWeight:600}}>
+                      📷 {animal.photos.length}
+                    </div>
+                  )}
                 </div>
                 <div style={{padding:"14px 14px 16px"}}>
                   <div style={{...P,fontWeight:700,fontSize:17,color:"#2A2420",marginBottom:4}}>{animal.name}</div>
