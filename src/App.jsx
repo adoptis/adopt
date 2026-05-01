@@ -41,17 +41,6 @@ const getPetSvg = (species, idx, brBg) => {
   return null;
 };
 
-const SAMPLES = [
-  { name:"코코",  breed:"말티즈",        species:"강아지", age:"2살",   gender:"암컷", branch:"ansan",      notes:"사람을 무척 좋아하는 순한 아이예요 🥰",    neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
-  { name:"나비",  breed:"코리안숏헤어",   species:"고양이", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"조용하고 독립적인 성격이에요",               neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
-  { name:"복실이",breed:"포메라니안",      species:"강아지", age:"1살",   gender:"암컷", branch:"pyeongtaek", notes:"에너지 넘치는 개구쟁이예요 ⚡",             neutered:false, vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
-  { name:"솜이",  breed:"네덜란드드워프", species:"토끼",   age:"6개월", gender:"암컷", branch:"wonju",      notes:"조용하고 얌전한 아이예요",                  neutered:false, vaccinated:false, photos:[], svgIdx:0, status:"입양완료" },
-  { name:"두부",  breed:"비글",           species:"강아지", age:"4살",   gender:"수컷", branch:"ansan",      notes:"산책을 엄청 좋아해요! 활발한 아이예요",    neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양대기" },
-  { name:"하늘이",breed:"페르시안",        species:"고양이", age:"5살",   gender:"암컷", branch:"wonju",      notes:"조용한 환경을 좋아하는 우아한 고양이예요", neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
-  { name:"몽이",  breed:"골든리트리버",   species:"강아지", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"온순하고 애교가 넘쳐요 🐾",                neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
-  { name:"치즈",  breed:"먼치킨",         species:"고양이", age:"2살",   gender:"수컷", branch:"pyeongtaek", notes:"동글동글 귀여운 눈망울이 매력이에요 😻",  neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양완료" },
-];
-
 const emptyForm = () => ({ name:"", breed:"", species:"강아지", age:"", gender:"암컷", branch:"ansan", notes:"", neutered:false, vaccinated:false, photos:[], svgIdx:0, status:"입양대기" });
 const spEmoji = s => ({강아지:"🐶",고양이:"🐱",토끼:"🐰",거북이:"🐢",앵무새:"🦜",기타:"🐾"}[s]||"🐾");
 const getBranch = id => BRANCHES.find(b=>b.id===id)||BRANCHES[0];
@@ -65,7 +54,6 @@ async function compressImg(dataUrl) {
       const r = Math.min(400/img.width, 400/img.height, 1);
       c.width = Math.round(img.width*r); c.height = Math.round(img.height*r);
       c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-      // WebP 지원 여부 확인 후 적용
       const webp = c.toDataURL("image/webp", 0.5);
       resolve(webp.startsWith("data:image/webp") ? webp : c.toDataURL("image/jpeg", 0.5));
     };
@@ -73,88 +61,13 @@ async function compressImg(dataUrl) {
   });
 }
 
-export default function App() {
-  const [screen, setScreen]     = useState("list");
-  const [animals, setAnimals]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [selected, setSelected] = useState(null);
-  const [branchF, setBranchF]   = useState("전체");
-  const [speciesF, setSpeciesF] = useState("전체");
-  const [isAdmin, setIsAdmin]   = useState(false);
-  const [pw, setPw]             = useState("");
-  const [pwErr, setPwErr]       = useState(false);
-  const [form, setForm]         = useState(emptyForm());
-  const [saving, setSaving]     = useState(false);
-  const [branchOpen, setBranchOpen]   = useState(false);
-  const [speciesOpen, setSpeciesOpen] = useState(false);
-  const [photoIdx, setPhotoIdx] = useState(0);
-  const tapRef   = useRef(0);
-  const tapTimer = useRef(null);
+const FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`;
+const F = { fontFamily:"'Noto Sans KR',sans-serif" };
+const P = { fontFamily:"'Sunflower',sans-serif" };
+const page = { ...F, background:"#FAF7F4", minHeight:"100vh" };
 
-  useEffect(() => { loadAll(); }, []);
-
-  async function loadAll() {
-    try {
-      const snap = await getDocs(collection(db, "animals"));
-      if (snap.empty) {
-        for (const a of SAMPLES) await addDoc(collection(db, "animals"), a);
-        const snap2 = await getDocs(collection(db, "animals"));
-        setAnimals(snap2.docs.map(d=>({...d.data(), id:d.id})));
-      } else {
-        setAnimals(snap.docs.map(d=>({...d.data(), id:d.id})));
-      }
-    } catch(e) { console.error(e); }
-    setLoading(false);
-  }
-
-  async function saveAnimal(isEdit=false) {
-    if (!form.name.trim() || saving) return;
-    setSaving(true);
-    try {
-      if (isEdit && form.id) {
-        const { id, ...data } = form;
-        await updateDoc(doc(db,"animals",id), data);
-        setAnimals(prev=>prev.map(a=>a.id===id ? {...data,id} : a));
-        setSelected({...data,id});
-        setScreen("detail");
-      } else {
-        const a = { ...form, svgIdx:Math.floor(Math.random()*3), createdAt:Date.now() };
-        const ref = await addDoc(collection(db, "animals"), a);
-        setAnimals(prev=>[{...a, id:ref.id}, ...prev]);
-        setForm(emptyForm()); setScreen("list");
-      }
-    } catch(e){ console.error(e); }
-    setSaving(false);
-  }
-
-  async function toggleStatus(id) {
-    const animal = animals.find(a=>a.id===id);
-    if (!animal) return;
-    const next = animal.status==="입양대기" ? "입양완료" : "입양대기";
-    await updateDoc(doc(db,"animals",id), { status: next });
-    const updated = animals.map(a=>a.id===id ? {...a, status:next} : a);
-    setAnimals(updated);
-    if (selected?.id===id) setSelected({...animal, status:next});
-  }
-
-  async function deleteAnimal(id) {
-    await deleteDoc(doc(db,"animals",id));
-    setAnimals(prev=>prev.filter(a=>a.id!==id));
-    setSelected(null); setScreen("list");
-  }
-
-  const handleLogoTap = () => {
-    tapRef.current++;
-    if(tapTimer.current) clearTimeout(tapTimer.current);
-    if(tapRef.current>=5){ setScreen("pwLogin"); tapRef.current=0; return; }
-    tapTimer.current = setTimeout(()=>{ tapRef.current=0; }, 2000);
-  };
-
-  const submitPw = () => {
-    if(pw===ADMIN_PW){ setIsAdmin(true); setScreen("list"); setPw(""); setPwErr(false); }
-    else setPwErr(true);
-  };
-
+/* ── 등록/수정 폼 (App 밖에 정의해서 리렌더링 문제 해결) ── */
+function FormScreen({ isEdit, form, setForm, saving, onSave, onBack }) {
   const handlePhotos = async e => {
     const files = Array.from(e.target.files);
     const current = form.photos || [];
@@ -167,51 +80,28 @@ export default function App() {
     })));
     setForm(prev=>({...prev, photos:[...current, ...compressed]}));
   };
-
   const removePhoto = (idx) => setForm(prev=>({...prev, photos:prev.photos.filter((_,i)=>i!==idx)}));
 
-  const sortAnimals = list => [...shuffle(list.filter(a=>a.status!=="입양완료")), ...shuffle(list.filter(a=>a.status==="입양완료"))];
-  const filtered = sortAnimals(animals.filter(a=>{
-    if(branchF!=="전체" && a.branch!==branchF) return false;
-    if(speciesF!=="전체" && a.species!==speciesF) return false;
-    return true;
-  }));
-
-  const F = { fontFamily:"'Noto Sans KR',sans-serif" };
-  const P = { fontFamily:"'Sunflower',sans-serif" };
-  const page = { ...F, background:"#FAF7F4", minHeight:"100vh" };
-
-  const getMainPhoto = (animal) => {
-    const photos = animal.photos || [];
-    if (photos.length > 0) return photos[0];
-    if (animal.photo) return animal.photo; // 구버전 호환
-    return getPetSvg(animal.species, animal.svgIdx||0, getBranch(animal.branch).bg);
-  };
-
-  const FormScreen = ({ isEdit=false }) => (
+  return (
     <div style={{...page,paddingBottom:60}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
+      <style>{FONT_IMPORT}</style>
       <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
-        <button onClick={()=>{ setScreen(isEdit?"detail":"list"); if(!isEdit) setForm(emptyForm()); }} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
+        <button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
         <span style={{...P,fontWeight:700,fontSize:18,color:"#2A2420"}}>{isEdit?"정보 수정":"새 아이 등록"}</span>
       </div>
       <div style={{padding:"20px 22px"}}>
-
-        {/* 사진 3장 */}
         <div style={{marginBottom:20}}>
           <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:8,letterSpacing:"0.1em",textTransform:"uppercase"}}>사진 (최대 3장)</label>
           <div style={{display:"flex",gap:10}}>
             {[0,1,2].map(i => {
               const photos = form.photos || [];
-              const hasPhoto = photos[i];
+              const hasPhoto = !!photos[i];
               return (
                 <div key={i} style={{position:"relative",width:100,height:100,borderRadius:14,overflow:"hidden",flexShrink:0,border:hasPhoto?"none":"1.5px dashed #D8CECE",background:hasPhoto?"none":"#F5F0EB",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}
                   onClick={()=>{ if(!hasPhoto) document.getElementById(`ph-inp-${i}`).click(); }}>
                   {hasPhoto
-                    ? <>
-                        <img src={photos[i]} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                        <button onClick={e=>{e.stopPropagation();removePhoto(i);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.5)",border:"none",color:"white",borderRadius:"50%",width:20,height:20,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>×</button>
-                      </>
+                    ? <><img src={photos[i]} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                        <button onClick={e=>{e.stopPropagation();removePhoto(i);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.5)",border:"none",color:"white",borderRadius:"50%",width:20,height:20,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>×</button></>
                     : <div style={{textAlign:"center",color:"#C4B4A8"}}><div style={{fontSize:22}}>📷</div><div style={{fontSize:10,marginTop:4}}>추가</div></div>
                   }
                   <input id={`ph-inp-${i}`} type="file" accept="image/*" onChange={handlePhotos} style={{display:"none"}} multiple/>
@@ -256,17 +146,125 @@ export default function App() {
           ))}
         </div>
 
-        <button onClick={()=>saveAnimal(isEdit)} disabled={!form.name.trim()||saving}
+        <button onClick={onSave} disabled={!form.name.trim()||saving}
           style={{width:"100%",padding:16,borderRadius:16,border:"none",background:form.name.trim()&&!saving?"#2A2420":"#E8DDD5",color:form.name.trim()&&!saving?"white":"#C4B4A8",fontSize:15,fontWeight:600,cursor:form.name.trim()&&!saving?"pointer":"default",...F}}>
           {saving ? "저장 중..." : isEdit ? "✓  수정 완료" : "🐾  등록하기"}
         </button>
       </div>
     </div>
   );
+}
+
+export default function App() {
+  const [screen, setScreen]     = useState("list");
+  const [animals, setAnimals]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [selected, setSelected] = useState(null);
+  const [branchF, setBranchF]   = useState("전체");
+  const [speciesF, setSpeciesF] = useState("전체");
+  const [isAdmin, setIsAdmin]   = useState(false);
+  const [pw, setPw]             = useState("");
+  const [pwErr, setPwErr]       = useState(false);
+  const [form, setForm]         = useState(emptyForm());
+  const [saving, setSaving]     = useState(false);
+  const [branchOpen, setBranchOpen]   = useState(false);
+  const [speciesOpen, setSpeciesOpen] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
+  const tapRef   = useRef(0);
+  const tapTimer = useRef(null);
+
+  useEffect(() => { loadAll(); }, []);
+
+  async function loadAll() {
+    try {
+      const snap = await getDocs(collection(db, "animals"));
+      if (snap.empty) {
+        const SAMPLES = [
+          { name:"코코",  breed:"말티즈",        species:"강아지", age:"2살",   gender:"암컷", branch:"ansan",      notes:"사람을 무척 좋아하는 순한 아이예요 🥰",    neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
+          { name:"나비",  breed:"코리안숏헤어",   species:"고양이", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"조용하고 독립적인 성격이에요",               neutered:true,  vaccinated:true,  photos:[], svgIdx:0, status:"입양대기" },
+          { name:"복실이",breed:"포메라니안",      species:"강아지", age:"1살",   gender:"암컷", branch:"pyeongtaek", notes:"에너지 넘치는 개구쟁이예요 ⚡",             neutered:false, vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+          { name:"솜이",  breed:"네덜란드드워프", species:"토끼",   age:"6개월", gender:"암컷", branch:"wonju",      notes:"조용하고 얌전한 아이예요",                  neutered:false, vaccinated:false, photos:[], svgIdx:0, status:"입양완료" },
+          { name:"두부",  breed:"비글",           species:"강아지", age:"4살",   gender:"수컷", branch:"ansan",      notes:"산책을 엄청 좋아해요! 활발한 아이예요",    neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양대기" },
+          { name:"하늘이",breed:"페르시안",        species:"고양이", age:"5살",   gender:"암컷", branch:"wonju",      notes:"조용한 환경을 좋아하는 우아한 고양이예요", neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+          { name:"몽이",  breed:"골든리트리버",   species:"강아지", age:"3살",   gender:"수컷", branch:"namyangju",  notes:"온순하고 애교가 넘쳐요 🐾",                neutered:true,  vaccinated:true,  photos:[], svgIdx:1, status:"입양대기" },
+          { name:"치즈",  breed:"먼치킨",         species:"고양이", age:"2살",   gender:"수컷", branch:"pyeongtaek", notes:"동글동글 귀여운 눈망울이 매력이에요 😻",  neutered:true,  vaccinated:true,  photos:[], svgIdx:2, status:"입양완료" },
+        ];
+        for (const a of SAMPLES) await addDoc(collection(db, "animals"), a);
+        const snap2 = await getDocs(collection(db, "animals"));
+        setAnimals(snap2.docs.map(d=>({...d.data(), id:d.id})));
+      } else {
+        setAnimals(snap.docs.map(d=>({...d.data(), id:d.id})));
+      }
+    } catch(e) { console.error(e); }
+    setLoading(false);
+  }
+
+  async function saveAnimal() {
+    if (!form.name.trim() || saving) return;
+    setSaving(true);
+    try {
+      if (form.id) {
+        const { id, ...data } = form;
+        await updateDoc(doc(db,"animals",id), data);
+        const updated = {...data, id};
+        setAnimals(prev=>prev.map(a=>a.id===id ? updated : a));
+        setSelected(updated);
+        setScreen("detail");
+      } else {
+        const a = { ...form, svgIdx:Math.floor(Math.random()*3), createdAt:Date.now() };
+        const ref = await addDoc(collection(db, "animals"), a);
+        setAnimals(prev=>[{...a, id:ref.id}, ...prev]);
+        setForm(emptyForm()); setScreen("list");
+      }
+    } catch(e){ console.error(e); }
+    setSaving(false);
+  }
+
+  async function toggleStatus(id) {
+    const animal = animals.find(a=>a.id===id);
+    if (!animal) return;
+    const next = animal.status==="입양대기" ? "입양완료" : "입양대기";
+    await updateDoc(doc(db,"animals",id), { status: next });
+    const updated = animals.map(a=>a.id===id ? {...a, status:next} : a);
+    setAnimals(updated);
+    if (selected?.id===id) setSelected({...animal, status:next});
+  }
+
+  async function deleteAnimal(id) {
+    await deleteDoc(doc(db,"animals",id));
+    setAnimals(prev=>prev.filter(a=>a.id!==id));
+    setSelected(null); setScreen("list");
+  }
+
+  const handleLogoTap = () => {
+    tapRef.current++;
+    if(tapTimer.current) clearTimeout(tapTimer.current);
+    if(tapRef.current>=5){ setScreen("pwLogin"); tapRef.current=0; return; }
+    tapTimer.current = setTimeout(()=>{ tapRef.current=0; }, 2000);
+  };
+
+  const submitPw = () => {
+    if(pw===ADMIN_PW){ setIsAdmin(true); setScreen("list"); setPw(""); setPwErr(false); }
+    else setPwErr(true);
+  };
+
+  const getMainPhoto = (animal) => {
+    const photos = animal.photos || [];
+    if (photos.length > 0) return photos[0];
+    if (animal.photo) return animal.photo;
+    return getPetSvg(animal.species, animal.svgIdx||0, getBranch(animal.branch).bg);
+  };
+
+  const sortAnimals = list => [...shuffle(list.filter(a=>a.status!=="입양완료")), ...shuffle(list.filter(a=>a.status==="입양완료"))];
+  const filtered = sortAnimals(animals.filter(a=>{
+    if(branchF!=="전체" && a.branch!==branchF) return false;
+    if(speciesF!=="전체" && a.species!==speciesF) return false;
+    return true;
+  }));
 
   if (loading) return (
     <div style={{...page,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:14,minHeight:"100vh"}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
+      <style>{FONT_IMPORT}</style>
       <div style={{fontSize:44}}>🐾</div>
       <p style={{color:"#C4B8AD",fontWeight:500,fontSize:14}}>불러오는 중...</p>
     </div>
@@ -274,7 +272,7 @@ export default function App() {
 
   if (screen==="pwLogin") return (
     <div style={{...page,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",padding:24,boxSizing:"border-box"}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
+      <style>{FONT_IMPORT}</style>
       <div style={{background:"white",borderRadius:28,padding:"40px 32px",width:"100%",maxWidth:380,boxShadow:"0 20px 60px rgba(0,0,0,0.07)"}}>
         <div style={{fontSize:40,marginBottom:16,textAlign:"center"}}>🔒</div>
         <h2 style={{margin:"0 0 6px",...P,fontWeight:700,fontSize:22,textAlign:"center",color:"#2A2420"}}>관리자 로그인</h2>
@@ -290,8 +288,17 @@ export default function App() {
     </div>
   );
 
-  if (screen==="addForm") return <FormScreen isEdit={false}/>;
-  if (screen==="editForm") return <FormScreen isEdit={true}/>;
+  if (screen==="addForm") return (
+    <FormScreen isEdit={false} form={form} setForm={setForm} saving={saving}
+      onSave={saveAnimal}
+      onBack={()=>{ setForm(emptyForm()); setScreen("list"); }}/>
+  );
+
+  if (screen==="editForm") return (
+    <FormScreen isEdit={true} form={form} setForm={setForm} saving={saving}
+      onSave={saveAnimal}
+      onBack={()=>setScreen("detail")}/>
+  );
 
   if (screen==="detail" && selected) {
     const br = getBranch(selected.branch);
@@ -303,7 +310,7 @@ export default function App() {
 
     return (
       <div style={{...page,paddingBottom:48}}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`}</style>
+        <style>{FONT_IMPORT}</style>
         <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
           <button onClick={()=>{setScreen("list");setPhotoIdx(0);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
           <span style={{fontWeight:600,fontSize:16,color:"#2A2420",flex:1,...F}}>{selected.name}</span>
@@ -369,7 +376,7 @@ export default function App() {
   const waitingCount = animals.filter(a=>a.status==="입양대기").length;
   return (
     <div style={{...page,paddingBottom:80}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap'); *{-webkit-tap-highlight-color:transparent;} ::-webkit-scrollbar{display:none;}`}</style>
+      <style>{`${FONT_IMPORT} *{-webkit-tap-highlight-color:transparent;} ::-webkit-scrollbar{display:none;}`}</style>
 
       {isAdmin && (
         <div style={{background:"#2A2420",color:"#D4C8B8",padding:"10px 22px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -386,7 +393,7 @@ export default function App() {
               <div style={{fontSize:12,color:"#C0785A",fontWeight:500,marginTop:4}}>{waitingCount}마리가 새 가족을 기다려요</div>
             </div>
             {isAdmin && (
-              <button onClick={()=>setScreen("addForm")} style={{background:"#2A2420",color:"white",border:"none",borderRadius:20,padding:"10px 20px",fontWeight:600,cursor:"pointer",...F,fontSize:13,marginTop:2}}>+ 등록</button>
+              <button onClick={()=>{ setForm(emptyForm()); setScreen("addForm"); }} style={{background:"#2A2420",color:"white",border:"none",borderRadius:20,padding:"10px 20px",fontWeight:600,cursor:"pointer",...F,fontSize:13,marginTop:2}}>+ 등록</button>
             )}
           </div>
 
