@@ -40,11 +40,10 @@ const getPetSvg=(species,idx,brBg)=>{
   return null;
 };
 
-const emptyForm=()=>({name:"",breed:"",species:"강아지",age:"",gender:"암컷",branch:"ansan",notes:"",neutered:false,vaccinated:false,photos:[],videoUrl:"",svgIdx:0,status:"입양대기"});
+const emptyForm=()=>({name:"",breed:"",species:"강아지",age:"",gender:"암컷",branch:"ansan",notes:"",neutered:false,vaccinated:false,photos:[],svgIdx:0,status:"입양대기"});
 const spEmoji=s=>({강아지:"🐶",고양이:"🐱",토끼:"🐰",거북이:"🐢",앵무새:"🦜",기타:"🐾"}[s]||"🐾");
 const getBranch=id=>BRANCHES.find(b=>b.id===id)||BRANCHES[0];
 const shuffle=arr=>[...arr].sort(()=>Math.random()-0.5);
-const getYtId=url=>{if(!url)return null;const m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);return m?m[1]:null;};
 
 async function compressImg(dataUrl){
   return new Promise(resolve=>{
@@ -64,29 +63,46 @@ async function compressImg(dataUrl){
 const FONT=`@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');`;
 const F={fontFamily:"'Noto Sans KR',sans-serif"};
 const P={fontFamily:"'Sunflower',sans-serif"};
+const page={...F,background:"#FAF7F4",minHeight:"100vh"};
 
-function PhoneFrame({children}){
-  return(
-    <>
-      <style>{`${FONT} *{-webkit-tap-highlight-color:transparent;box-sizing:border-box;}::-webkit-scrollbar{display:none;}body{margin:0;background:#D8CFC6;}
-      @media(max-width:500px){.po{background:transparent!important;padding:0!important;min-height:100vh!important;}.pf{border-radius:0!important;border:none!important;box-shadow:none!important;}.pn,.ph{display:none!important;}}`}</style>
-      <div className="po" style={{display:"flex",justifyContent:"center",alignItems:"flex-start",minHeight:"100vh",background:"#D8CFC6",padding:"28px 16px"}}>
-        <div className="pf" style={{width:"100%",maxWidth:400,background:"#FAF7F4",borderRadius:44,border:"8px solid #2A2420",boxShadow:"0 40px 100px rgba(0,0,0,0.35)",overflow:"hidden",display:"flex",flexDirection:"column"}}>
-          <div className="pn" style={{background:"#2A2420",height:34,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <div style={{width:88,height:20,background:"#1A1410",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",gap:7}}>
-              <div style={{width:7,height:7,borderRadius:"50%",background:"#333",border:"1.5px solid #555"}}/>
-              <div style={{width:38,height:5,borderRadius:4,background:"#1A1410",border:"1px solid #444"}}/>
-            </div>
-          </div>
-          <div style={{flex:1,overflowY:"auto",overflowX:"hidden",maxHeight:"82vh"}}>{children}</div>
-          <div className="ph" style={{background:"#2A2420",height:26,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <div style={{width:88,height:5,borderRadius:3,background:"#444"}}/>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
+const GLOBAL_CSS = `
+  ${FONT}
+  *{-webkit-tap-highlight-color:transparent;}
+  ::-webkit-scrollbar{display:none;}
+  body{margin:0;}
+  .animal-grid{
+    padding:6px 14px 24px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .detail-photos{
+    display:grid;
+    gap:8px;
+    padding:16px 22px 0;
+  }
+  .detail-photos.count-1{ grid-template-columns:1fr; }
+  .detail-photos.count-2{ grid-template-columns:1fr 1fr; }
+  .detail-photos.count-3{ grid-template-columns:1fr 1fr 1fr; }
+  @media(min-width:768px){
+    .animal-grid{
+      padding:8px 20px 30px;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .list-header-inner{ max-width:1200px; margin:0 auto; }
+    .detail-wrap{ max-width:900px; margin:0 auto; }
+    .detail-photos{ padding:24px 32px 0; }
+    .detail-photos.count-1{ grid-template-columns:1fr; max-width:600px; }
+    .detail-photos.count-2{ grid-template-columns:1fr 1fr; }
+    .detail-photos.count-3{ grid-template-columns:1fr 1fr 1fr; }
+    .detail-info{ padding:20px 32px 0 !important; }
+    .detail-photo-item{ aspect-ratio:4/3 !important; }
+    .form-wrap{ max-width:600px; margin:0 auto; }
+  }
+`;
 
 function FormScreen({isEdit,form,setForm,saving,onSave,onBack}){
   const handlePhotos=async e=>{
@@ -102,58 +118,53 @@ function FormScreen({isEdit,form,setForm,saving,onSave,onBack}){
   };
   const removePhoto=idx=>setForm(prev=>({...prev,photos:prev.photos.filter((_,i)=>i!==idx)}));
   return(
-    <div style={{background:"#FAF7F4",paddingBottom:60}}>
-      <div style={{background:"white",padding:"13px 18px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
+    <div style={{...page,paddingBottom:60}}>
+      <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
         <button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
         <span style={{...P,fontWeight:700,fontSize:18,color:"#2A2420"}}>{isEdit?"정보 수정":"새 아이 등록"}</span>
       </div>
-      <div style={{padding:"18px 18px"}}>
-        <div style={{marginBottom:16}}>
-          <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:7,letterSpacing:"0.1em",textTransform:"uppercase"}}>사진 (최대 3장)</label>
-          <div style={{display:"flex",gap:8}}>
+      <div className="form-wrap" style={{padding:"20px 22px"}}>
+        <div style={{marginBottom:20}}>
+          <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:8,letterSpacing:"0.1em",textTransform:"uppercase"}}>사진 (최대 3장)</label>
+          <div style={{display:"flex",gap:10}}>
             {[0,1,2].map(i=>{
               const photos=form.photos||[];const hp=!!photos[i];
               return(
-                <div key={i} style={{position:"relative",flex:1,aspectRatio:"1",borderRadius:13,overflow:"hidden",border:hp?"none":"1.5px dashed #D8CECE",background:hp?"none":"#F5F0EB",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}
+                <div key={i} style={{position:"relative",width:100,height:100,borderRadius:14,overflow:"hidden",flexShrink:0,border:hp?"none":"1.5px dashed #D8CECE",background:hp?"none":"#F5F0EB",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}
                   onClick={()=>{if(!hp)document.getElementById(`pi${i}`).click();}}>
                   {hp?<><img src={photos[i]} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
                     <button onClick={e=>{e.stopPropagation();removePhoto(i);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.55)",border:"none",color:"white",borderRadius:"50%",width:22,height:22,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>×</button></>
-                  :<div style={{textAlign:"center",color:"#C4B4A8"}}><div style={{fontSize:20}}>📷</div><div style={{fontSize:10,marginTop:3}}>추가</div></div>}
+                  :<div style={{textAlign:"center",color:"#C4B4A8"}}><div style={{fontSize:22}}>📷</div><div style={{fontSize:10,marginTop:4}}>추가</div></div>}
                   <input id={`pi${i}`} type="file" accept="image/*" onChange={handlePhotos} style={{display:"none"}} multiple/>
                 </div>
               );
             })}
           </div>
         </div>
-        <div style={{marginBottom:13}}>
-          <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>유튜브 영상 URL (선택)</label>
-          <input value={form.videoUrl||""} onChange={e=>setForm(f=>({...f,videoUrl:e.target.value}))} placeholder="https://youtube.com/watch?v=..."
-            style={{width:"100%",padding:"11px 13px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:13,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420"}}/>
-        </div>
         {[{label:"이름 *",key:"name",ph:"예: 코코"},{label:"품종",key:"breed",ph:"예: 말티즈"},{label:"나이",key:"age",ph:"예: 2살"}].map(({label,key,ph})=>(
-          <div key={key} style={{marginBottom:11}}>
+          <div key={key} style={{marginBottom:12}}>
             <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{label}</label>
             <input value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={ph}
-              style={{width:"100%",padding:"11px 13px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420"}}/>
+              style={{width:"100%",padding:"11px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420"}}/>
           </div>
         ))}
-        <div style={{marginBottom:13}}>
+        <div style={{marginBottom:14}}>
           <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>특이사항</label>
           <textarea value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="예: 사람을 좋아하는 순한 아이예요 🥰"
-            style={{width:"100%",padding:"11px 13px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420",minHeight:70,resize:"vertical"}}/>
+            style={{width:"100%",padding:"12px 14px",borderRadius:12,border:"1.5px solid #EDE5DE",...F,fontSize:14,boxSizing:"border-box",outline:"none",background:"white",color:"#2A2420",minHeight:70,resize:"vertical"}}/>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:13}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
           {[{label:"종류",key:"species",opts:SPECIES_OPTS.map(s=>({v:s,l:s}))},{label:"성별",key:"gender",opts:[{v:"암컷",l:"암컷"},{v:"수컷",l:"수컷"}]},{label:"관리센터",key:"branch",opts:BRANCHES.map(b=>({v:b.id,l:b.name}))}].map(({label,key,opts})=>(
             <div key={key}>
               <label style={{display:"block",fontSize:10,fontWeight:600,color:"#C4B4A8",marginBottom:4,letterSpacing:"0.08em",textTransform:"uppercase"}}>{label}</label>
               <select value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))}
-                style={{width:"100%",padding:"10px 5px",borderRadius:11,border:"1.5px solid #EDE5DE",...F,fontSize:12,background:"white",outline:"none",color:"#2A2420"}}>
+                style={{width:"100%",padding:"10px 6px",borderRadius:11,border:"1.5px solid #EDE5DE",...F,fontSize:12,background:"white",outline:"none",color:"#2A2420"}}>
                 {opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </div>
           ))}
         </div>
-        <div style={{display:"flex",gap:20,marginBottom:22}}>
+        <div style={{display:"flex",gap:24,marginBottom:24}}>
           {[{key:"neutered",label:"중성화 완료"},{key:"vaccinated",label:"접종 완료"}].map(({key,label})=>(
             <label key={key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:14,fontWeight:500,color:"#5A4A40"}}>
               <input type="checkbox" checked={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.checked}))} style={{width:16,height:16,accentColor:"#C0785A",cursor:"pointer"}}/>
@@ -162,7 +173,7 @@ function FormScreen({isEdit,form,setForm,saving,onSave,onBack}){
           ))}
         </div>
         <button onClick={onSave} disabled={!form.name.trim()||saving}
-          style={{width:"100%",padding:15,borderRadius:15,border:"none",background:form.name.trim()&&!saving?"#2A2420":"#E8DDD5",color:form.name.trim()&&!saving?"white":"#C4B4A8",fontSize:15,fontWeight:600,cursor:form.name.trim()&&!saving?"pointer":"default",...F}}>
+          style={{width:"100%",padding:16,borderRadius:16,border:"none",background:form.name.trim()&&!saving?"#2A2420":"#E8DDD5",color:form.name.trim()&&!saving?"white":"#C4B4A8",fontSize:15,fontWeight:600,cursor:form.name.trim()&&!saving?"pointer":"default",...F}}>
           {saving?"저장 중...":isEdit?"✓  수정 완료":"🐾  등록하기"}
         </button>
       </div>
@@ -193,14 +204,14 @@ export default function App(){
       const snap=await getDocs(collection(db,"animals"));
       if(snap.empty){
         const S=[
-          {name:"코코",breed:"말티즈",species:"강아지",age:"2살",gender:"암컷",branch:"ansan",notes:"사람을 무척 좋아하는 순한 아이예요 🥰",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:0,status:"입양대기"},
-          {name:"나비",breed:"코리안숏헤어",species:"고양이",age:"3살",gender:"수컷",branch:"namyangju",notes:"조용하고 독립적인 성격이에요",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:0,status:"입양대기"},
-          {name:"복실이",breed:"포메라니안",species:"강아지",age:"1살",gender:"암컷",branch:"pyeongtaek",notes:"에너지 넘치는 개구쟁이예요 ⚡",neutered:false,vaccinated:true,photos:[],videoUrl:"",svgIdx:1,status:"입양대기"},
-          {name:"솜이",breed:"네덜란드드워프",species:"토끼",age:"6개월",gender:"암컷",branch:"wonju",notes:"조용하고 얌전한 아이예요",neutered:false,vaccinated:false,photos:[],videoUrl:"",svgIdx:0,status:"입양완료"},
-          {name:"두부",breed:"비글",species:"강아지",age:"4살",gender:"수컷",branch:"ansan",notes:"산책을 엄청 좋아해요! 활발한 아이예요",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:2,status:"입양대기"},
-          {name:"하늘이",breed:"페르시안",species:"고양이",age:"5살",gender:"암컷",branch:"wonju",notes:"조용한 환경을 좋아하는 우아한 고양이예요",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:1,status:"입양대기"},
-          {name:"몽이",breed:"골든리트리버",species:"강아지",age:"3살",gender:"수컷",branch:"namyangju",notes:"온순하고 애교가 넘쳐요 🐾",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:1,status:"입양대기"},
-          {name:"치즈",breed:"먼치킨",species:"고양이",age:"2살",gender:"수컷",branch:"pyeongtaek",notes:"동글동글 귀여운 눈망울이 매력이에요 😻",neutered:true,vaccinated:true,photos:[],videoUrl:"",svgIdx:2,status:"입양완료"},
+          {name:"코코",breed:"말티즈",species:"강아지",age:"2살",gender:"암컷",branch:"ansan",notes:"사람을 무척 좋아하는 순한 아이예요 🥰",neutered:true,vaccinated:true,photos:[],svgIdx:0,status:"입양대기"},
+          {name:"나비",breed:"코리안숏헤어",species:"고양이",age:"3살",gender:"수컷",branch:"namyangju",notes:"조용하고 독립적인 성격이에요",neutered:true,vaccinated:true,photos:[],svgIdx:0,status:"입양대기"},
+          {name:"복실이",breed:"포메라니안",species:"강아지",age:"1살",gender:"암컷",branch:"pyeongtaek",notes:"에너지 넘치는 개구쟁이예요 ⚡",neutered:false,vaccinated:true,photos:[],svgIdx:1,status:"입양대기"},
+          {name:"솜이",breed:"네덜란드드워프",species:"토끼",age:"6개월",gender:"암컷",branch:"wonju",notes:"조용하고 얌전한 아이예요",neutered:false,vaccinated:false,photos:[],svgIdx:0,status:"입양완료"},
+          {name:"두부",breed:"비글",species:"강아지",age:"4살",gender:"수컷",branch:"ansan",notes:"산책을 엄청 좋아해요! 활발한 아이예요",neutered:true,vaccinated:true,photos:[],svgIdx:2,status:"입양대기"},
+          {name:"하늘이",breed:"페르시안",species:"고양이",age:"5살",gender:"암컷",branch:"wonju",notes:"조용한 환경을 좋아하는 우아한 고양이예요",neutered:true,vaccinated:true,photos:[],svgIdx:1,status:"입양대기"},
+          {name:"몽이",breed:"골든리트리버",species:"강아지",age:"3살",gender:"수컷",branch:"namyangju",notes:"온순하고 애교가 넘쳐요 🐾",neutered:true,vaccinated:true,photos:[],svgIdx:1,status:"입양대기"},
+          {name:"치즈",breed:"먼치킨",species:"고양이",age:"2살",gender:"수컷",branch:"pyeongtaek",notes:"동글동글 귀여운 눈망울이 매력이에요 😻",neutered:true,vaccinated:true,photos:[],svgIdx:2,status:"입양완료"},
         ];
         for(const a of S)await addDoc(collection(db,"animals"),a);
         const snap2=await getDocs(collection(db,"animals"));
@@ -272,208 +283,195 @@ export default function App(){
     return true;
   }));
 
-  if(loading)return<PhoneFrame><div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:14,minHeight:"60vh"}}><div style={{fontSize:44}}>🐾</div><p style={{color:"#C4B8AD",fontWeight:500,fontSize:14,...F}}>불러오는 중...</p></div></PhoneFrame>;
-
-  if(screen==="pwLogin")return(
-    <PhoneFrame>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"70vh",padding:24}}>
-        <div style={{background:"white",borderRadius:26,padding:"34px 26px",width:"100%",boxShadow:"0 8px 30px rgba(0,0,0,0.07)"}}>
-          <div style={{fontSize:38,marginBottom:14,textAlign:"center"}}>🔒</div>
-          <h2 style={{margin:"0 0 6px",...P,fontWeight:700,fontSize:20,textAlign:"center",color:"#2A2420"}}>관리자 로그인</h2>
-          <p style={{margin:"0 0 22px",color:"#B4A89C",fontSize:13,textAlign:"center"}}>관리자 비밀번호를 입력해주세요</p>
-          <input type="password" value={pw} onChange={e=>{setPw(e.target.value);setPwErr(false);}} onKeyDown={e=>e.key==="Enter"&&submitPw()} placeholder="비밀번호"
-            style={{width:"100%",padding:"13px 15px",borderRadius:12,border:`1.5px solid ${pwErr?"#C07070":"#EDE5DE"}`,...F,fontSize:15,boxSizing:"border-box",outline:"none",color:"#2A2420",background:"#FDFAF8"}}/>
-          {pwErr&&<p style={{color:"#B05050",fontSize:13,margin:"8px 0 0",fontWeight:500}}>비밀번호가 맞지 않아요</p>}
-          <div style={{display:"flex",gap:10,marginTop:16}}>
-            <button onClick={()=>{setScreen("list");setPw("");setPwErr(false);}} style={{flex:1,padding:13,borderRadius:13,border:"1.5px solid #EDE5DE",background:"white",cursor:"pointer",fontWeight:500,...F,fontSize:14,color:"#B4A89C"}}>취소</button>
-            <button onClick={submitPw} style={{flex:2,padding:13,borderRadius:13,border:"none",background:"#2A2420",color:"white",cursor:"pointer",fontWeight:600,...F,fontSize:14}}>입장하기</button>
-          </div>
-        </div>
-      </div>
-    </PhoneFrame>
+  if(loading)return(
+    <div style={{...page,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:14,minHeight:"100vh"}}>
+      <style>{GLOBAL_CSS}</style>
+      <div style={{fontSize:44}}>🐾</div>
+      <p style={{color:"#C4B8AD",fontWeight:500,fontSize:14}}>불러오는 중...</p>
+    </div>
   );
 
-  if(screen==="addForm")return<PhoneFrame><FormScreen isEdit={false} form={form} setForm={setForm} saving={saving} onSave={saveAnimal} onBack={()=>{setForm(emptyForm());setScreen("list");}}/></PhoneFrame>;
-  if(screen==="editForm")return<PhoneFrame><FormScreen isEdit={true} form={form} setForm={setForm} saving={saving} onSave={saveAnimal} onBack={()=>setScreen("detail")}/></PhoneFrame>;
+  if(screen==="pwLogin")return(
+    <div style={{...page,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",padding:24,boxSizing:"border-box"}}>
+      <style>{GLOBAL_CSS}</style>
+      <div style={{background:"white",borderRadius:28,padding:"40px 32px",width:"100%",maxWidth:380,boxShadow:"0 20px 60px rgba(0,0,0,0.07)"}}>
+        <div style={{fontSize:40,marginBottom:16,textAlign:"center"}}>🔒</div>
+        <h2 style={{margin:"0 0 6px",...P,fontWeight:700,fontSize:22,textAlign:"center",color:"#2A2420"}}>관리자 로그인</h2>
+        <p style={{margin:"0 0 28px",color:"#B4A89C",fontSize:14,textAlign:"center"}}>관리자 비밀번호를 입력해주세요</p>
+        <input type="password" value={pw} onChange={e=>{setPw(e.target.value);setPwErr(false);}} onKeyDown={e=>e.key==="Enter"&&submitPw()} placeholder="비밀번호"
+          style={{width:"100%",padding:"14px 18px",borderRadius:14,border:`1.5px solid ${pwErr?"#C07070":"#EDE5DE"}`,...F,fontSize:15,boxSizing:"border-box",outline:"none",color:"#2A2420",background:"#FDFAF8"}}/>
+        {pwErr&&<p style={{color:"#B05050",fontSize:13,margin:"8px 0 0",fontWeight:500}}>비밀번호가 맞지 않아요</p>}
+        <div style={{display:"flex",gap:10,marginTop:20}}>
+          <button onClick={()=>{setScreen("list");setPw("");setPwErr(false);}} style={{flex:1,padding:14,borderRadius:14,border:"1.5px solid #EDE5DE",background:"white",cursor:"pointer",fontWeight:500,...F,fontSize:14,color:"#B4A89C"}}>취소</button>
+          <button onClick={submitPw} style={{flex:2,padding:14,borderRadius:14,border:"none",background:"#2A2420",color:"white",cursor:"pointer",fontWeight:600,...F,fontSize:14}}>입장하기</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if(screen==="addForm")return(<><style>{GLOBAL_CSS}</style><FormScreen isEdit={false} form={form} setForm={setForm} saving={saving} onSave={saveAnimal} onBack={()=>{setForm(emptyForm());setScreen("list");}}/></>);
+  if(screen==="editForm")return(<><style>{GLOBAL_CSS}</style><FormScreen isEdit={true} form={form} setForm={setForm} saving={saving} onSave={saveAnimal} onBack={()=>setScreen("detail")}/></>);
 
   if(screen==="detail"&&selected){
     const br=getBranch(selected.branch);
     const adopted=selected.status==="입양완료";
     const photos=selected.photos?.length>0?selected.photos:(selected.photo?[selected.photo]:[]);
     const svgPhoto=getPetSvg(selected.species,selected.svgIdx||0,br.bg);
-    const ytId=getYtId(selected.videoUrl);
+    const displayPhotos=photos.length>0?photos:[svgPhoto].filter(Boolean);
+    const photoCount=displayPhotos.length;
     return(
-      <PhoneFrame>
-        <div style={{background:"#FAF7F4",paddingBottom:40}}>
-          <div style={{background:"white",padding:"13px 17px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
-            <button onClick={()=>setScreen("list")} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
-            <span style={{fontWeight:600,fontSize:16,color:"#2A2420",flex:1,...F}}>{selected.name}</span>
-            {adopted&&<span style={{background:"#EDE5DE",color:"#9A8A80",padding:"4px 11px",borderRadius:20,fontSize:11,fontWeight:600}}>입양완료</span>}
-          </div>
-
-          <div style={{padding:"14px 14px 0"}}>
-            {/* 사진 3장 모두 표시 */}
-            {photos.length>0?(
-              <div style={{display:"grid",gridTemplateColumns:photos.length===1?"1fr":photos.length===2?"1fr 1fr":"1fr 1fr 1fr",gap:6,marginBottom:8}}>
-                {photos.map((p,i)=>(
-                  <div key={i} style={{position:"relative",borderRadius:14,overflow:"hidden",aspectRatio:"1",background:br.bg}}>
-                    <img src={p} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                    {adopted&&i===0&&<div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.65)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                      <span style={{background:"#6A5A50",color:"white",padding:"3px 8px",borderRadius:9,fontSize:10,fontWeight:600}}>입양완료</span>
-                    </div>}
-                  </div>
-                ))}
-              </div>
-            ):(
-              <div style={{borderRadius:18,overflow:"hidden",aspectRatio:"1",background:br.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:70,position:"relative",marginBottom:8}}>
-                {svgPhoto?<img src={svgPhoto} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span>{spEmoji(selected.species)}</span>}
-                {adopted&&<div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.65)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{...page,paddingBottom:48}}>
+        <style>{GLOBAL_CSS}</style>
+        <div style={{background:"white",padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
+          <button onClick={()=>setScreen("list")} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,padding:4,lineHeight:1,color:"#8A7A70"}}>←</button>
+          <span style={{fontWeight:600,fontSize:16,color:"#2A2420",flex:1,...F}}>{selected.name}</span>
+          {adopted&&<span style={{background:"#EDE5DE",color:"#9A8A80",padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:600}}>입양완료</span>}
+        </div>
+        <div className="detail-wrap">
+          <div className={`detail-photos count-${photoCount}`}>
+            {displayPhotos.map((p,i)=>(
+              <div key={i} className="detail-photo-item" style={{position:"relative",borderRadius:18,overflow:"hidden",aspectRatio:"1",background:br.bg}}>
+                <img src={p} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                {adopted&&i===0&&<div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.7)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                   <span style={{background:"#6A5A50",color:"white",padding:"5px 13px",borderRadius:12,fontSize:12,fontWeight:600}}>입양완료</span>
                 </div>}
               </div>
-            )}
-            {/* 유튜브 */}
-            {ytId&&<div style={{borderRadius:14,overflow:"hidden",aspectRatio:"16/9",marginBottom:8}}>
-              <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${ytId}`} frameBorder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowFullScreen style={{display:"block"}}/>
-            </div>}
+            ))}
           </div>
-
-          <div style={{padding:"12px 16px 0"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:11}}>
+          <div className="detail-info" style={{padding:"16px 22px 0"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
               <div>
-                <h1 style={{margin:"0 0 3px",...P,fontSize:24,fontWeight:700,color:"#2A2420"}}>{selected.name}</h1>
+                <h1 style={{margin:"0 0 5px",...P,fontSize:26,fontWeight:700,color:"#2A2420"}}>{selected.name}</h1>
                 <p style={{margin:0,color:"#A89890",fontSize:13}}>{selected.breed} · {selected.age} · {selected.gender}</p>
               </div>
-              <div style={{background:br.bg,borderRadius:10,padding:"6px 11px",display:"flex",alignItems:"center",gap:5}}>
-                <span style={{fontSize:13}}>{br.dot}</span>
+              <div style={{background:br.bg,borderRadius:10,padding:"6px 12px",display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:14}}>{br.dot}</span>
                 <span style={{fontSize:11,fontWeight:700,color:br.color}}>{br.name}</span>
               </div>
             </div>
-            <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:12}}>
-              {selected.neutered&&<span style={{background:"#E8F4EA",color:"#3A7A48",padding:"5px 11px",borderRadius:20,fontSize:12,fontWeight:600}}>✓ 중성화 완료</span>}
-              {selected.vaccinated&&<span style={{background:"#E8EEF8",color:"#3A5890",padding:"5px 11px",borderRadius:20,fontSize:12,fontWeight:600}}>✓ 접종 완료</span>}
-              {!selected.neutered&&<span style={{background:"#F2EDE8",color:"#C0B0A8",padding:"5px 11px",borderRadius:20,fontSize:12,fontWeight:500}}>중성화 미완료</span>}
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+              {selected.neutered&&<span style={{background:"#E8F4EA",color:"#3A7A48",padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600}}>✓ 중성화 완료</span>}
+              {selected.vaccinated&&<span style={{background:"#E8EEF8",color:"#3A5890",padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600}}>✓ 접종 완료</span>}
+              {!selected.neutered&&<span style={{background:"#F2EDE8",color:"#C0B0A8",padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:500}}>중성화 미완료</span>}
             </div>
-            {selected.notes&&<div style={{background:"white",borderRadius:14,padding:"13px 15px",marginBottom:11,border:"1px solid #EDE5DE",lineHeight:1.85,fontSize:14,color:"#5A4A40"}}>{selected.notes}</div>}
-            <div style={{background:"white",borderRadius:14,padding:"12px 15px",marginBottom:18,border:"1px solid #EDE5DE"}}>
-              <p style={{margin:"0 0 2px",fontSize:10,color:"#C4B4A8",fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase"}}>담당 관리센터</p>
+            {selected.notes&&<div style={{background:"white",borderRadius:16,padding:"16px 18px",marginBottom:14,border:"1px solid #EDE5DE",lineHeight:1.85,fontSize:14,color:"#5A4A40"}}>{selected.notes}</div>}
+            <div style={{background:"white",borderRadius:16,padding:"14px 18px",marginBottom:22,border:"1px solid #EDE5DE"}}>
+              <p style={{margin:"0 0 3px",fontSize:10,color:"#C4B4A8",fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase"}}>담당 관리센터</p>
               <p style={{margin:0,fontWeight:600,color:"#2A2420",fontSize:14}}>{br.full}</p>
             </div>
-            {isAdmin&&<div style={{display:"flex",gap:8}}>
-              <button onClick={()=>toggleStatus(selected.id)} style={{flex:1,padding:13,borderRadius:13,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:adopted?"#B07A30":"#4A8C7A",color:"white"}}>
+            {isAdmin&&<div style={{display:"flex",gap:10}}>
+              <button onClick={()=>toggleStatus(selected.id)} style={{flex:1,padding:14,borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:adopted?"#B07A30":"#4A8C7A",color:"white"}}>
                 {adopted?"입양대기로 변경":"입양완료로 변경"}
               </button>
-              <button onClick={()=>{setForm({...selected,photos:selected.photos||[],videoUrl:selected.videoUrl||""});setScreen("editForm");}}
-                style={{padding:"13px 13px",borderRadius:13,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#F2F0EB",color:"#5A4A40"}}>수정</button>
+              <button onClick={()=>{setForm({...selected,photos:selected.photos||[]});setScreen("editForm");}}
+                style={{padding:"14px 16px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#F2F0EB",color:"#5A4A40"}}>수정</button>
               <button onClick={()=>{if(window.confirm(`${selected.name}를 삭제할까요?`))deleteAnimal(selected.id);}}
-                style={{padding:"13px 13px",borderRadius:13,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#FAECEC",color:"#B05050"}}>삭제</button>
+                style={{padding:"14px 16px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:600,...F,fontSize:13,background:"#FAECEC",color:"#B05050"}}>삭제</button>
             </div>}
           </div>
         </div>
-      </PhoneFrame>
+      </div>
     );
   }
 
   const waitingCount=animals.filter(a=>a.status==="입양대기").length;
   return(
-    <PhoneFrame>
-      <div style={{background:"#FAF7F4",paddingBottom:20}}>
-        {isAdmin&&<div style={{background:"#2A2420",color:"#D4C8B8",padding:"9px 17px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontWeight:500,fontSize:11,letterSpacing:"0.06em"}}>🔑  관리자 모드</span>
-          <button onClick={()=>setIsAdmin(false)} style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#D4C8B8",padding:"4px 11px",borderRadius:20,cursor:"pointer",fontWeight:500,...F,fontSize:11}}>나가기</button>
-        </div>}
+    <div style={{...page,paddingBottom:80}}>
+      <style>{GLOBAL_CSS}</style>
+      {isAdmin&&<div style={{background:"#2A2420",color:"#D4C8B8",padding:"10px 22px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontWeight:500,fontSize:12,letterSpacing:"0.06em"}}>🔑  관리자 모드</span>
+        <button onClick={()=>setIsAdmin(false)} style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#D4C8B8",padding:"5px 14px",borderRadius:20,cursor:"pointer",fontWeight:500,...F,fontSize:11}}>나가기</button>
+      </div>}
 
-        <div style={{background:"white",borderBottom:"1px solid #EDE5DE",position:"sticky",top:0,zIndex:50}}>
-          <div style={{padding:"16px 16px 13px"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:13}}>
-              <div onClick={handleLogoTap} style={{cursor:"pointer",userSelect:"none"}}>
-                <div style={{...P,fontWeight:700,fontSize:21,color:"#2A2420",lineHeight:1.15}}>사지말고 입양하세요</div>
-                <div style={{fontSize:11,color:"#C0785A",fontWeight:500,marginTop:3}}>{waitingCount}마리가 새 가족을 기다려요</div>
-              </div>
-              {isAdmin&&<button onClick={()=>{setForm(emptyForm());setScreen("addForm");}} style={{background:"#2A2420",color:"white",border:"none",borderRadius:20,padding:"9px 15px",fontWeight:600,cursor:"pointer",...F,fontSize:12,marginTop:2}}>+ 등록</button>}
+      <div style={{background:"white",borderBottom:"1px solid #EDE5DE",position:"sticky",top:isAdmin?38:0,zIndex:50}}>
+        <div className="list-header-inner" style={{padding:"20px 22px 16px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18}}>
+            <div onClick={handleLogoTap} style={{cursor:"pointer",userSelect:"none"}}>
+              <div style={{...P,fontWeight:700,fontSize:24,color:"#2A2420",lineHeight:1.15}}>사지말고 입양하세요</div>
+              <div style={{fontSize:12,color:"#C0785A",fontWeight:500,marginTop:4}}>{waitingCount}마리가 새 가족을 기다려요</div>
             </div>
+            {isAdmin&&<button onClick={()=>{setForm(emptyForm());setScreen("addForm");}} style={{background:"#2A2420",color:"white",border:"none",borderRadius:20,padding:"10px 20px",fontWeight:600,cursor:"pointer",...F,fontSize:13,marginTop:2}}>+ 등록</button>}
+          </div>
 
-            <div style={{marginBottom:8}}>
-              <button onClick={()=>{setBranchOpen(o=>!o);setSpeciesOpen(false);}}
-                style={{width:"100%",padding:"11px 13px",borderRadius:13,border:`1.5px solid ${branchOpen||branchF!=="전체"?"#C0785A":"#EDE5DE"}`,background:branchF!=="전체"?"#FDF4F0":"white",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontWeight:600,...F,fontSize:13,color:branchF!=="전체"?"#C0785A":"#B4A89C"}}>
-                <span>{branchF==="전체"?"🏠  관리센터 전체":getBranch(branchF).dot+"  "+getBranch(branchF).full}</span>
-                <span style={{fontSize:9,display:"inline-block",transform:branchOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s",color:"#C4B4A8"}}>▼</span>
-              </button>
-              {branchOpen&&<div style={{marginTop:5,background:"white",borderRadius:14,border:"1px solid #EDE5DE",overflow:"hidden"}}>
-                {[{id:"전체",full:"전체 관리센터",dot:"🏠",color:"#C0785A",bg:"#FDF4F0"},...BRANCHES].map((b,i)=>{
-                  const active=branchF===b.id;
-                  return<div key={b.id} onClick={()=>{setBranchF(b.id);setBranchOpen(false);}}
-                    style={{padding:"11px 15px",cursor:"pointer",background:active?b.bg:"white",borderTop:i>0?"1px solid #F5EEE8":"none",display:"flex",alignItems:"center",gap:10}}>
-                    <span style={{fontSize:16}}>{b.dot}</span>
-                    <span style={{fontWeight:active?700:400,color:active?b.color:"#8A7A70",fontSize:13,...F}}>{b.full}</span>
-                    {active&&<span style={{marginLeft:"auto",color:b.color,fontWeight:700}}>✓</span>}
-                  </div>;
-                })}
-              </div>}
-            </div>
+          <div style={{marginBottom:10}}>
+            <button onClick={()=>{setBranchOpen(o=>!o);setSpeciesOpen(false);}}
+              style={{width:"100%",padding:"12px 16px",borderRadius:14,border:`1.5px solid ${branchOpen||branchF!=="전체"?"#C0785A":"#EDE5DE"}`,background:branchF!=="전체"?"#FDF4F0":"white",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontWeight:600,...F,fontSize:13,color:branchF!=="전체"?"#C0785A":"#B4A89C"}}>
+              <span>{branchF==="전체"?"🏠  관리센터 전체":getBranch(branchF).dot+"  "+getBranch(branchF).full}</span>
+              <span style={{fontSize:9,display:"inline-block",transform:branchOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s",color:"#C4B4A8"}}>▼</span>
+            </button>
+            {branchOpen&&<div style={{marginTop:6,background:"white",borderRadius:16,border:"1px solid #EDE5DE",overflow:"hidden"}}>
+              {[{id:"전체",full:"전체 관리센터",dot:"🏠",color:"#C0785A",bg:"#FDF4F0"},...BRANCHES].map((b,i)=>{
+                const active=branchF===b.id;
+                return<div key={b.id} onClick={()=>{setBranchF(b.id);setBranchOpen(false);}}
+                  style={{padding:"13px 18px",cursor:"pointer",background:active?b.bg:"white",borderTop:i>0?"1px solid #F5EEE8":"none",display:"flex",alignItems:"center",gap:12}}>
+                  <span style={{fontSize:18}}>{b.dot}</span>
+                  <span style={{fontWeight:active?700:400,color:active?b.color:"#8A7A70",fontSize:14,...F}}>{b.full}</span>
+                  {active&&<span style={{marginLeft:"auto",color:b.color,fontWeight:700}}>✓</span>}
+                </div>;
+              })}
+            </div>}
+          </div>
 
-            <div>
-              <button onClick={()=>{setSpeciesOpen(o=>!o);setBranchOpen(false);}}
-                style={{width:"100%",padding:"11px 13px",borderRadius:13,border:`1.5px solid ${speciesOpen||speciesF!=="전체"?"#6B6BAE":"#EDE5DE"}`,background:speciesF!=="전체"?"#F2F2FB":"white",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontWeight:600,...F,fontSize:13,color:speciesF!=="전체"?"#6B6BAE":"#B4A89C"}}>
-                <span>{speciesF==="전체"?"🐾  종류 전체":spEmoji(speciesF)+"  "+speciesF}</span>
-                <span style={{fontSize:9,display:"inline-block",transform:speciesOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s",color:"#C4B4A8"}}>▼</span>
-              </button>
-              {speciesOpen&&<div style={{marginTop:5,background:"white",borderRadius:14,border:"1px solid #EDE5DE",overflow:"hidden"}}>
-                {[{s:"전체",label:"전체 종류",color:"#6B6BAE",bg:"#F2F2FB"},...SPECIES_OPTS.map(s=>({s,label:s,color:{강아지:"#C0785A",고양이:"#6B6BAE",토끼:"#4A8C7A",거북이:"#4A7C59",앵무새:"#B07A30",기타:"#8A7A70"}[s]||"#6B6BAE",bg:{강아지:"#FDF4F0",고양이:"#F2F2FB",토끼:"#EFF7F4",거북이:"#EAF4EC",앵무새:"#FBF5E8",기타:"#F5F0EB"}[s]||"#F5F0EB"}))].map((item,i)=>{
-                  const active=speciesF===item.s;
-                  return<div key={item.s} onClick={()=>{setSpeciesF(item.s);setSpeciesOpen(false);}}
-                    style={{padding:"11px 15px",cursor:"pointer",background:active?item.bg:"white",borderTop:i>0?"1px solid #F5EEE8":"none",display:"flex",alignItems:"center",gap:10}}>
-                    <span style={{fontSize:17}}>{item.s==="전체"?"🐾":spEmoji(item.s)}</span>
-                    <span style={{fontWeight:active?700:400,color:active?item.color:"#8A7A70",fontSize:13,...F}}>{item.label}</span>
-                    {active&&<span style={{marginLeft:"auto",color:item.color,fontWeight:700}}>✓</span>}
-                  </div>;
-                })}
-              </div>}
-            </div>
+          <div>
+            <button onClick={()=>{setSpeciesOpen(o=>!o);setBranchOpen(false);}}
+              style={{width:"100%",padding:"12px 16px",borderRadius:14,border:`1.5px solid ${speciesOpen||speciesF!=="전체"?"#6B6BAE":"#EDE5DE"}`,background:speciesF!=="전체"?"#F2F2FB":"white",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontWeight:600,...F,fontSize:13,color:speciesF!=="전체"?"#6B6BAE":"#B4A89C"}}>
+              <span>{speciesF==="전체"?"🐾  종류 전체":spEmoji(speciesF)+"  "+speciesF}</span>
+              <span style={{fontSize:9,display:"inline-block",transform:speciesOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s",color:"#C4B4A8"}}>▼</span>
+            </button>
+            {speciesOpen&&<div style={{marginTop:6,background:"white",borderRadius:16,border:"1px solid #EDE5DE",overflow:"hidden"}}>
+              {[{s:"전체",label:"전체 종류",color:"#6B6BAE",bg:"#F2F2FB"},...SPECIES_OPTS.map(s=>({s,label:s,color:{강아지:"#C0785A",고양이:"#6B6BAE",토끼:"#4A8C7A",거북이:"#4A7C59",앵무새:"#B07A30",기타:"#8A7A70"}[s]||"#6B6BAE",bg:{강아지:"#FDF4F0",고양이:"#F2F2FB",토끼:"#EFF7F4",거북이:"#EAF4EC",앵무새:"#FBF5E8",기타:"#F5F0EB"}[s]||"#F5F0EB"}))].map((item,i)=>{
+                const active=speciesF===item.s;
+                return<div key={item.s} onClick={()=>{setSpeciesF(item.s);setSpeciesOpen(false);}}
+                  style={{padding:"13px 18px",cursor:"pointer",background:active?item.bg:"white",borderTop:i>0?"1px solid #F5EEE8":"none",display:"flex",alignItems:"center",gap:12}}>
+                  <span style={{fontSize:20}}>{item.s==="전체"?"🐾":spEmoji(item.s)}</span>
+                  <span style={{fontWeight:active?700:400,color:active?item.color:"#8A7A70",fontSize:14,...F}}>{item.label}</span>
+                  {active&&<span style={{marginLeft:"auto",color:item.color,fontWeight:700}}>✓</span>}
+                </div>;
+              })}
+            </div>}
           </div>
         </div>
+      </div>
 
-        <div style={{padding:"10px 14px 4px",fontSize:11,color:"#C4B4A8",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase"}}>{filtered.length}마리</div>
+      <div style={{padding:"14px 22px 6px",fontSize:11,color:"#C4B4A8",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase"}}>{filtered.length}마리</div>
 
-        {filtered.length===0?(
-          <div style={{textAlign:"center",padding:"60px 20px",color:"#D5C8C0"}}>
-            <div style={{fontSize:40,marginBottom:12}}>🐾</div>
-            <p style={{fontWeight:500,fontSize:14,...F}}>해당하는 아이가 없어요</p>
-          </div>
-        ):(
-          <div style={{padding:"4px 10px 20px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {filtered.map(animal=>{
-              const br=getBranch(animal.branch);
-              const adopted=animal.status==="입양완료";
-              const mainPhoto=getMainPhoto(animal);
-              return(
-                <div key={animal.id} onClick={()=>{setSelected(animal);setScreen("detail");}}
-                  style={{background:"white",borderRadius:18,overflow:"hidden",cursor:"pointer",border:"1px solid #EDE5DE",opacity:adopted?0.58:1,transition:"transform 0.15s,box-shadow 0.15s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow="0 10px 26px rgba(0,0,0,0.09)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
-                  <div style={{position:"relative",width:"100%",aspectRatio:"1",background:br.bg,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    {mainPhoto?<img src={mainPhoto} alt={animal.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:34}}>{spEmoji(animal.species)}</span>}
-                    {adopted&&<div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.65)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                      <span style={{background:"#6A5A50",color:"white",padding:"4px 9px",borderRadius:9,fontSize:10,fontWeight:600}}>입양완료</span>
-                    </div>}
-                    <div style={{position:"absolute",top:7,left:7,background:"rgba(255,255,255,0.88)",borderRadius:8,padding:"2px 7px",fontSize:10,fontWeight:700,color:br.color}}>{br.dot} {br.name}</div>
-                    {(animal.photos?.length||0)>1&&<div style={{position:"absolute",bottom:5,right:5,background:"rgba(0,0,0,0.45)",borderRadius:6,padding:"2px 6px",fontSize:10,color:"white",fontWeight:600}}>📷{animal.photos.length}</div>}
-                    {animal.videoUrl&&<div style={{position:"absolute",bottom:5,left:5,background:"rgba(200,0,0,0.8)",borderRadius:6,padding:"2px 6px",fontSize:10,color:"white",fontWeight:600}}>▶영상</div>}
-                  </div>
-                  <div style={{padding:"10px 11px 12px"}}>
-                    <div style={{...P,fontWeight:700,fontSize:15,color:"#2A2420",marginBottom:3}}>{animal.name}</div>
-                    <div style={{fontSize:11,color:"#B4A89C",fontWeight:400,marginBottom:7}}>{animal.breed} · {animal.age}</div>
-                    <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                      <span style={{fontSize:10,fontWeight:600,color:"#8A7A70",background:"#F2EDE8",padding:"3px 7px",borderRadius:6}}>{animal.gender}</span>
-                      {animal.neutered&&<span style={{fontSize:10,fontWeight:600,color:"#4A8C7A",background:"#EFF7F4",padding:"3px 7px",borderRadius:6}}>중성화</span>}
-                    </div>
+      {filtered.length===0?(
+        <div style={{textAlign:"center",padding:"70px 20px",color:"#D5C8C0"}}>
+          <div style={{fontSize:44,marginBottom:14}}>🐾</div>
+          <p style={{fontWeight:500,fontSize:14}}>해당하는 아이가 없어요</p>
+        </div>
+      ):(
+        <div className="animal-grid">
+          {filtered.map(animal=>{
+            const br=getBranch(animal.branch);
+            const adopted=animal.status==="입양완료";
+            const mainPhoto=getMainPhoto(animal);
+            return(
+              <div key={animal.id} onClick={()=>{setSelected(animal);setScreen("detail");}}
+                style={{background:"white",borderRadius:22,overflow:"hidden",cursor:"pointer",border:"1px solid #EDE5DE",opacity:adopted?0.58:1,transition:"transform 0.18s,box-shadow 0.18s"}}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow="0 14px 36px rgba(0,0,0,0.10)";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
+                <div style={{position:"relative",width:"100%",aspectRatio:"1",background:br.bg,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {mainPhoto?<img src={mainPhoto} alt={animal.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:40}}>{spEmoji(animal.species)}</span>}
+                  {adopted&&<div style={{position:"absolute",inset:0,background:"rgba(250,247,244,0.65)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <span style={{background:"#6A5A50",color:"white",padding:"5px 12px",borderRadius:12,fontSize:10,fontWeight:600}}>입양완료</span>
+                  </div>}
+                  <div style={{position:"absolute",top:10,left:10,background:"rgba(255,255,255,0.88)",borderRadius:10,padding:"3px 9px",fontSize:11,fontWeight:700,color:br.color}}>{br.dot} {br.name}</div>
+                  {(animal.photos?.length||0)>1&&<div style={{position:"absolute",bottom:8,right:8,background:"rgba(0,0,0,0.45)",borderRadius:8,padding:"2px 7px",fontSize:10,color:"white",fontWeight:600}}>📷{animal.photos.length}</div>}
+                </div>
+                <div style={{padding:"14px 14px 16px"}}>
+                  <div style={{...P,fontWeight:700,fontSize:17,color:"#2A2420",marginBottom:4}}>{animal.name}</div>
+                  <div style={{fontSize:12,color:"#B4A89C",fontWeight:400,marginBottom:10}}>{animal.breed} · {animal.age}</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <span style={{fontSize:11,fontWeight:600,color:"#8A7A70",background:"#F2EDE8",padding:"4px 10px",borderRadius:8}}>{animal.gender}</span>
+                    {animal.neutered&&<span style={{fontSize:11,fontWeight:600,color:"#4A8C7A",background:"#EFF7F4",padding:"4px 10px",borderRadius:8}}>중성화</span>}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </PhoneFrame>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
