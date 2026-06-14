@@ -50,11 +50,11 @@ async function compressImg(dataUrl){
     const img=new Image();
     img.onload=()=>{
       const c=document.createElement("canvas");
-      const r=Math.min(400/img.width,400/img.height,1);
+      const r=Math.min(800/img.width,800/img.height,1);
       c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);
       c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-      const webp=c.toDataURL("image/webp",0.5);
-      resolve(webp.startsWith("data:image/webp")?webp:c.toDataURL("image/jpeg",0.5));
+      const webp=c.toDataURL("image/webp",0.75);
+      resolve(webp.startsWith("data:image/webp")?webp:c.toDataURL("image/jpeg",0.75));
     };
     img.src=dataUrl;
   });
